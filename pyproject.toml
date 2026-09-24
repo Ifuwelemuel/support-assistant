@@ -4,7 +4,13 @@ version = "0.1.0"
 description = "Customer-support ticket classification and RAG assistant"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+
+dependencies = [
+    "pandas>=3.0.6",
+]
+
+[project.scripts]
+check-data = "support_assistant.data:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -23,3 +29,8 @@ select = ["E", "F", "I", "B", "UP"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
