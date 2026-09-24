@@ -1,6 +1,6 @@
 # support-assistant
 # support-assistant
-A customer-support assistant built with modern MLengineering practice.
+A customer-support ticket classifier and RAG answerer, built with modern ML engineering practice.
 
 A ticket classifier that routes support tickets, feeding a retrieval-augmented
 LLM answerer that drafts grounded replies. Built as an end-to-end ML engineering
