@@ -1,0 +1,13 @@
+id,created_at,channel,category,priority,subject,body
+T-1001,2026-09-01,email,billing,high,Charged twice this month,"I was billed twice on 1 September, please refund the duplicate"
+T-1002,2026-09-01,chat,login,medium,Cannot reset password,The reset link in the email expires before I can open it
+T-1003,2026-09-02,web,shipping,low,Where is my order,Tracking has not updated in four days
+T-1004,2026-09-02,email,bug,high,App crashes on export,Exporting a report to PDF closes the app every time
+T-1005,2026-09-03,chat,feature_request,low,Dark mode please,Would love a dark theme for the dashboard
+T-1006,2026-09-03,email,billing,medium,Invoice missing VAT number,Our finance team needs the VAT number on invoices
+T-1007,2026-09-04,web,login,high,Locked out after 2FA change,Changed phones and now 2FA codes are rejected
+T-1008,2026-09-04,chat,shipping,medium,Wrong item delivered,Received a blue case instead of the black one ordered
+T-1009,2026-09-05,email,bug,medium,Search returns no results,Searching for any term shows an empty page since yesterday
+T-1010,2026-09-05,web,billing,low,Update card details,How do I change the card on file
+T-1011,2026-09-06,chat,feature_request,medium,Export to Excel,Please add an xlsx export alongside CSV
+T-1012,2026-09-06,email,login,low,Email change not saving,New email address reverts to the old one after saving
