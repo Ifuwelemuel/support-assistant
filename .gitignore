@@ -1,0 +1,30 @@
+# ---- Python (Day 3 onward) ----
+__pycache__/            # compiled bytecode; regenerated automatically
+*.py[cod]               # .pyc / .pyo / .pyd anywhere
+*.egg-info/             # metadata written when the package is installed
+.venv/                  # the virtual environment; recreated in seconds from the lockfile
+dist/                   # built packages
+build/
+
+# ---- Tool caches ----
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# ---- Environment and secrets ----
+.env                    # real config with secrets; NEVER committed
+.env.*                  # .env.local, .env.production, ...
+!.env.example           # ...except the template, which IS committed
+
+# ---- Data and models ----
+data/*                  # raw data never goes in Git (size, privacy, churn)
+!data/sample/           # ...except a tiny committed sample for tests and docs
+models/                 # trained artefacts live in a registry, not Git
+mlruns/                 # MLflow's local store (Week 2)
+
+# ---- macOS and editors ----
+.DS_Store               # Finder's folder metadata
+.vscode/                # personal editor settings
+*.swp
