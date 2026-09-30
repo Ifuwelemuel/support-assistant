@@ -1,4 +1,4 @@
-id,created_at,channel,category,priority,subject,body
+id,created_at,channel,git ,priority,subject,body
 T-1001,2026-09-01,email,billing,high,Charged twice this month,"I was billed twice on 1 September, please refund the duplicate"
 T-1002,2026-09-01,chat,login,medium,Cannot reset password,The reset link in the email expires before I can open it
 T-1003,2026-09-02,web,shipping,low,Where is my order,Tracking has not updated in four days
