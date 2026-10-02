@@ -1,32 +1,33 @@
 from pathlib import Path
+
 import pytest
+
 from support_assistant.analysis import (
+    Ticket,
     TicketError,
     count_by,
     filter_by,
     high_priority,
-    load_rows,
+    load_tickets,
     top_words,
     write_report,
 )
 
-#SAMPLE = Path(__file__).resolve().parents[1] / "data" / "sample" / "tickets.csv"
-SAMPLE = Path("/Users/mac/Desktop/2026/Bootcamp/code/support-assistant/data/sample/ticket.csv")
+SAMPLE = Path("data/sample/ticket.csv")
 
-def test_count_by_priority():
-    rows = load_rows(SAMPLE)
-    assert count_by(rows,"priority") == {"high":3,"medium":5,"low":4}
+def test_count_by_priority(tickets):
+    assert count_by(tickets, "priority") == {"high": 3, "medium": 5, "low": 4}
 
 
-def test_load_rows_reads_all_tickets():
-    rows = load_rows(SAMPLE)
-    assert len(rows) == 12
-    assert rows[0]["id"] == "T-1001"
-    assert rows[-1]["id"] == "T-1012"
+def test_load_tickets_reads_all_tickets(tickets):
+    assert len(tickets) == 12
+    assert tickets[0].id == "T-1001"
+    assert tickets[-1].id == "T-1012"
+    assert isinstance(tickets[0], Ticket)
 
-def test_count_category():
-    rows = load_rows(SAMPLE)
-    assert count_by(rows, "category") == {
+
+def test_count_by_category(tickets):
+    assert count_by(tickets, "category") == {
         "billing": 3,
         "login": 3,
         "shipping": 2,
@@ -34,53 +35,66 @@ def test_count_category():
         "feature_request": 2,
     }
 
-def test_filter_by_billing_ids():
-    rows = load_rows(SAMPLE)
+
+def test_filter_by_billing_ids(tickets):
     ids = []
-    for row in filter_by(rows, "category", "billing"):
-        ids.append(row["id"])
-    assert ids == ["T-1001","T-1006","T-1010"]
-
-def test_filter_by_no_match_is_empty():
-    rows = load_rows(SAMPLE)
-    assert filter_by(rows,"channel","fax") == []
+    for ticket in filter_by(tickets, "category", "billing"):
+        ids.append(ticket.id)
+    assert ids == ["T-1001", "T-1006", "T-1010"]
 
 
-def test_high_priority_ids():
-    rows = load_rows(SAMPLE)
-    assert len(high_priority(rows)) ==3
-    assert high_priority(rows)[0]["id"] == "T-1001"
+def test_filter_by_no_match_is_empty(tickets):
+    assert filter_by(tickets, "channel", "fax") == []
 
 
-
-def test_top_word_first_two():
-    rows = load_rows(SAMPLE)
-    assert top_words(rows)[:2] == [("export" , 2),("change",2)]
-
-
-def test_top_words_respects_n():
-    rows = load_rows(SAMPLE)
-    assert len(top_words(rows, 5)) == 5
-    assert len(top_words(rows,1)) == 1
+def test_high_priority_ids(tickets):
+    assert len(high_priority(tickets)) == 3
+    assert high_priority(tickets)[0].id == "T-1001"
 
 
-##day 4
+def test_top_words_first_two(tickets):
+    assert top_words(tickets)[:2] == [("export", 2), ("change", 2)]
+
+
+def test_top_words_respects_n(tickets):
+    assert len(top_words(tickets, 5)) == 5
+    assert len(top_words(tickets, 1)) == 1
+
+
 def test_missing_file_raises_ticket_error():
-    with pytest.raises(TicketError,match="not found"):
-        load_rows("data/sample/nope.csv")
-
-def test_unknown_field_raises_ticket_error():
-    rows = load_rows(SAMPLE)
-    with pytest.raises(TicketError,match="unknown field'colour'"):
-        count_by(rows,"colour")
-    with pytest.raises(TicketError,match="unknown field"):
-        filter_by(rows,"colour", "red")
+    with pytest.raises(TicketError, match="not found"):
+        load_tickets("data/sample/nope.csv")
 
 
-def test_write_report_creates_file(tmp_path):
-    rows = load_rows(SAMPLE)
-    report = write_report(rows, tmp_path / "out" / "summary.txt")
+def test_unknown_field_raises_ticket_error(tickets):
+    with pytest.raises(TicketError, match="unknown field 'colour'"):
+        count_by(tickets, "colour")
+    with pytest.raises(TicketError, match="unknown field"):
+        filter_by(tickets, "colour", "red")
+
+
+def test_write_report_creates_file(tickets, tmp_path):
+    report = write_report(tickets, tmp_path / "out" / "summary.txt")
     assert report.exists()
     text = report.read_text()
     assert text.startswith("12 tickets")
     assert "export: 2" in text
+
+
+def test_ticket_is_high_and_describe():
+    ticket = Ticket("T-1", "2026-01-01", "email", "bug", "high", "Crash", "It crashed")
+    assert ticket.is_high()
+    assert ticket.describe() == ' T-1 (high) Crash'
+    assert not Ticket("T-2", "2026-01-01", "chat", "bug", "low", "Slow", "Slow").is_high()
+
+
+def test_wrong_columns_raise_ticket_error(tmp_path):
+    bad = tmp_path / "bad.csv"
+    bad.write_text("id,subject\nT-9,Only two columns\n")
+    with pytest.raises(TicketError, match="does not match the Ticket fields"):
+        load_tickets(bad)
+
+
+def test_tickets_with_same_data_are_equal(tickets):
+    assert tickets[0] == load_tickets(SAMPLE)[0]
+    assert tickets[0] != tickets[1]
