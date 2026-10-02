@@ -38,7 +38,7 @@ def high_priority(rows):
 def count_of(pair):
     return pair[1]
 
-def top_words(row,n=3):
+def top_words(rows,n=3):
     """The n most common words across ticket subject, as (word, count) pairs"""
     counts = {}
     for row in rows:
