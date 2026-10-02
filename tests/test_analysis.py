@@ -1,7 +1,17 @@
 from pathlib import Path
-from support_assistant.analysis import count_by, filter_by, high_priority, load_rows, top_words
+import pytest
+from support_assistant.analysis import (
+    TicketError,
+    count_by,
+    filter_by,
+    high_priority,
+    load_rows,
+    top_words,
+    write_report,
+)
 
-SAMPLE = Path(__file__).resolve().parents[1] / "data" / "sample" / "tickets.csv"
+#SAMPLE = Path(__file__).resolve().parents[1] / "data" / "sample" / "tickets.csv"
+SAMPLE = Path("/Users/mac/Desktop/2026/Bootcamp/code/support-assistant/data/sample/ticket.csv")
 
 def test_count_by_priority():
     rows = load_rows(SAMPLE)
@@ -52,3 +62,25 @@ def test_top_words_respects_n():
     rows = load_rows(SAMPLE)
     assert len(top_words(rows, 5)) == 5
     assert len(top_words(rows,1)) == 1
+
+
+##day 4
+def test_missing_file_raises_ticket_error():
+    with pytest.raises(TicketError,match="not found"):
+        load_rows("data/sample/nope.csv")
+
+def test_unknown_field_raises_ticket_error():
+    rows = load_rows(SAMPLE)
+    with pytest.raises(TicketError,match="unknown field'colour'"):
+        count_by(rows,"colour")
+    with pytest.raises(TicketError,match="unknown field"):
+        filter_by(rows,"colour", "red")
+
+
+def test_write_report_creates_file(tmp_path):
+    rows = load_rows(SAMPLE)
+    report = write_report(rows, tmp_path / "out" / "summary.txt")
+    assert report.exists()
+    text = report.read_text()
+    assert text.startswith("12 tickets")
+    assert "export: 2" in text

@@ -1,0 +1,30 @@
+12 tickets
+
+By category:
+  billing: 3
+  login: 3
+  shipping: 2
+  bug: 2
+  feature_request: 2
+
+By priority:
+  high: 3
+  medium: 5
+  low: 4
+
+By channel:
+  email: 5
+  chat: 4
+  web: 3
+
+High priority:
+  T-1001  Charged twice this month
+  T-1004  App crashes on export
+  T-1007  Locked out after 2FA change
+
+Top words in subjects:
+  export: 2
+  change: 2
+  charged: 1
+  twice: 1
+  this: 1
