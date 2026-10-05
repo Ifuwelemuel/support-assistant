@@ -12,6 +12,7 @@ build/
 .mypy_cache/
 .coverage
 htmlcov/
+.ipynb_checkpoints/
 
 # ---- Environment and secrets ----
 .env                    # real config with secrets; NEVER committed
