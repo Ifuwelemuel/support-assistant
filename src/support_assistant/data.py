@@ -38,7 +38,9 @@ def validate(df: pd.DataFrame) -> list[str]:
     if duplicates:
         issues.append(f"duplicate ids: {duplicates}")
     return issues
-
+def load_raw(path:str | Path) -> pd.DataFrame:
+    """Read a ticket csv with no validation for that still needs cleaning"""
+    return pd.read_csv(path,dtype=str)
 
 def load_tickets(path: str | Path) -> pd.DataFrame:
     """Read a ticket CSV and return a validated DataFrame, or raise TicketDataError."""
@@ -51,6 +53,71 @@ def load_tickets(path: str | Path) -> pd.DataFrame:
         raise TicketDataError("; ".join(issues))
     df["created_at"] = pd.to_datetime(df["created_at"])
     return df
+
+
+TEXT_COLUMNS = ["id","channel","category","priority","subject","body"]
+LABEL_COLUMNS = ["channel","category","priority"]
+
+def strip_text(df: pd.DataFrame) -> pd.DataFrame:
+    """Trim whitespace in every text column; cells left blank become missing."""
+    df = df.copy()
+    for col in TEXT_COLUMNS:
+        df[col] = df[col].str.strip().replace("", pd.NA)
+    return df
+
+
+def normalise_labels(df: pd.DataFrame) -> pd.DataFrame:
+    """Lower-case the label columns, drop hyphens, join words with underscore"""
+    df = df.copy()
+    for col in LABEL_COLUMNS:
+        df[col] = (
+            df[col].str.lower().str.replace("-","", regex=False).str.replace(" ","_",regex=False)
+        )
+
+    return df
+
+def fill_missing_priority(df: pd.DataFrame, default: str = "medium") -> pd.DataFrame:
+    df = df.copy()
+    df["priority"] = df["priority"].fillna(default)
+
+    return df
+
+def drop_incomplete(df: pd.DataFrame) -> pd.DataFrame:
+    """Drop tickets with no id, subject or body — there is nothing to classify."""
+    return df.dropna(subset=["id", "subject", "body"])
+
+
+def drop_duplicate_ids(df: pd.DataFrame) -> pd.DataFrame:
+    """Keep the first row for each id."""
+    return df.drop_duplicates(subset="id", keep="first")
+
+
+def parse_dates(df: pd.DataFrame) -> pd.DataFrame:
+    """Parse created_at from any of the formats seen in the wild, day first."""
+    df = df.copy()
+    df["created_at"] = pd.to_datetime(df["created_at"], format="mixed", dayfirst=True)
+    return df
+
+
+def clean_tickets(df: pd.DataFrame) -> pd.DataFrame:
+    """Apply every cleaning rule in order and return a validated, tidy frame."""
+    df = strip_text(df)
+    df = normalise_labels(df)
+    df = fill_missing_priority(df)
+    df = drop_incomplete(df)
+    df = drop_duplicate_ids(df)
+    df = parse_dates(df)
+    df = df.sort_values("id").reset_index(drop=True)
+    issues = validate(df)
+    if issues:
+        raise TicketDataError("; ".join(issues))
+    return df
+
+
+
+
+
+
 
 
 def main(argv: list[str] | None = None) -> int:
