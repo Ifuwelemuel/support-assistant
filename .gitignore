@@ -21,6 +21,7 @@ htmlcov/
 
 # ---- Data and models ----
 data/*                  # raw data never goes in Git (size, privacy, churn)
+data/raw
 !data/sample/           # ...except a tiny committed sample for tests and docs
 models/                 # trained artefacts live in a registry, not Git
 mlruns/                 # MLflow's local store (Week 2)
