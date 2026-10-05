@@ -113,6 +113,11 @@ def clean_tickets(df: pd.DataFrame) -> pd.DataFrame:
         raise TicketDataError("; ".join(issues))
     return df
 
+def category_shares(df : pd.DataFrame) -> pd.Series:
+    """share of tickets in each category, larger first """
+
+    return df["category"].value_counts(normalize=True)
+
 
 
 
