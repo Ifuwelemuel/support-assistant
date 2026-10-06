@@ -68,3 +68,8 @@ Git hooks (see `.pre-commit-config.yaml`) check each commit: whitespace, valid Y
 
 
 ![CI](https://github.com/Ifuwelemuel/support-assistant/actions/workflows/ci.yml/badge.svg)
+
+
+| `.github/workflows/ci.yml` | CI: runs `make lint` and `make test` on every pull request and on `main` |
+
+Every pull request is checked by GitHub Actions on a clean Linux machine. `main` is protected: changes arrive only through pull requests, and only when both checks, `lint` and `test`, have passed.
