@@ -65,3 +65,6 @@ Git hooks (see `.pre-commit-config.yaml`) check each commit: whitespace, valid Y
 | `make serve` | Builds the image and runs the API in a container on port 8000; check it with `curl localhost:8000/health` |
 
 | `src/support_assistant/api.py` | FastAPI application; `/health` endpoint |
+
+
+![CI](https://github.com/Ifuwelemuel/support-assistant/actions/workflows/ci.yml/badge.svg)
