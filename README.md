@@ -58,3 +58,10 @@ Both figures are drawn by `notebooks/05_plots.ipynb` from the synthetic tickets.
 | `make hooks` | Runs every pre-commit hook on every file |
 
 Git hooks (see `.pre-commit-config.yaml`) check each commit: whitespace, valid YAML/TOML, no large files, no private keys, and ruff. A fixer hook repairs the file and stops the commit; look at `git diff`, then `git add` and commit again.
+
+
+| `make api` | Runs the API on this machine at http://localhost:8000 (docs at `/docs`) |
+| `make image` | Builds the Docker image from `Dockerfile`, installing exactly what `uv.lock` pins |
+| `make serve` | Builds the image and runs the API in a container on port 8000; check it with `curl localhost:8000/health` |
+
+| `src/support_assistant/api.py` | FastAPI application; `/health` endpoint |
