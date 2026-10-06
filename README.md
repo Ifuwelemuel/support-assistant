@@ -53,3 +53,8 @@ Both figures are drawn by `notebooks/05_plots.ipynb` from the synthetic tickets.
 | 1 | Python by hand | done — 19 tests |
 | 2 | pandas, notebooks, real-data habits | done — 37 tests |
 | 3 | ruff, pre-commit, Docker, CI | next |
+
+
+| `make hooks` | Runs every pre-commit hook on every file |
+
+Git hooks (see `.pre-commit-config.yaml`) check each commit: whitespace, valid YAML/TOML, no large files, no private keys, and ruff. A fixer hook repairs the file and stops the commit; look at `git diff`, then `git add` and commit again.

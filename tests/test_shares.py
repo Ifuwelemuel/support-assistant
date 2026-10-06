@@ -10,3 +10,9 @@ def test_category_shares_are_fractions_largest_first():
     assert shares["bug"] == 0.5
     assert shares["login"] == 0.25
     assert shares.sum() == 1.0
+
+
+def test_category_shares_single_category():
+    df = pd.DataFrame({"category": ["bug", "bug"]})
+    shares = category_shares(df)
+    assert shares.to_dict() == {"bug": 1.0}
