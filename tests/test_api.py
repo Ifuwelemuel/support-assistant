@@ -13,4 +13,5 @@ def test_health_returns_ok():
 
 def test_unknown_path_is_handled():
     response = client.get("/nothing-here")
-    assert response.status_code == 200
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Not Found"}
