@@ -1,7 +1,7 @@
 from pathlib import Path
 
-import pytest
 import pandas as pd
+import pytest
 
 from support_assistant.data import REQUIRED_COLUMNS, TicketDataError, load_tickets, validate
 

@@ -9,7 +9,6 @@ from support_assistant.data import (
     drop_incomplete,
     fill_missing_priority,
     load_raw,
-    load_tickets,
     normalise_labels,
     parse_dates,
     strip_text,
@@ -21,8 +20,14 @@ MESSY = Path(__file__).resolve().parents[1] / "data" / "sample" / "tickets_messy
 
 def test_strip_text_trims_and_blanks_become_missing():
     df = pd.DataFrame(
-        {"id": [" T-1 "], "channel": ["web"], "category": ["bug"],
-         "priority": ["low"], "subject": ["  Hi  "], "body": ["   "]}
+        {
+            "id": [" T-1 "],
+            "channel": ["web"],
+            "category": ["bug"],
+            "priority": ["low"],
+            "subject": ["  Hi  "],
+            "body": ["   "],
+        }
     )
     out = strip_text(df)
     assert out.loc[0, "id"] == "T-1"
@@ -32,7 +37,11 @@ def test_strip_text_trims_and_blanks_become_missing():
 
 def test_normalise_labels():
     df = pd.DataFrame(
-        {"channel": ["E-mail", "Chat"], "category": ["Feature Request", "LOGIN"], "priority": ["High", "low"]}
+        {
+            "channel": ["E-mail", "Chat"],
+            "category": ["Feature Request", "LOGIN"],
+            "priority": ["High", "low"],
+        }
     )
     out = normalise_labels(df)
     assert out["channel"].tolist() == ["email", "chat"]
@@ -74,4 +83,4 @@ def test_clean_messy_equals_tidy(sample_path):
     assert len(messy) == 15
     clean = clean_tickets(messy)
     assert validate(clean) == []
-    #assert_frame_equal(clean, load_tickets(sample_path))
+    # assert_frame_equal(clean, load_tickets(sample_path))

@@ -7,7 +7,13 @@ from pathlib import Path
 
 import pandas as pd
 
-CATEGORIES = {"billing": 0.30, "login": 0.25, "bug": 0.20, "shipping": 0.15, "feature_request": 0.10}
+CATEGORIES = {
+    "billing": 0.30,
+    "login": 0.25,
+    "bug": 0.20,
+    "shipping": 0.15,
+    "feature_request": 0.10,
+}
 CHANNELS = {"email": 0.5, "chat": 0.3, "web": 0.2}
 PRIORITY_BY_CATEGORY = {
     "billing": {"low": 0.3, "medium": 0.5, "high": 0.2},
@@ -17,11 +23,36 @@ PRIORITY_BY_CATEGORY = {
     "feature_request": {"low": 0.7, "medium": 0.3, "high": 0.0},
 }
 SUBJECTS = {
-    "billing": ["Charged twice this month", "Invoice missing VAT number", "Update card details", "Refund not received"],
-    "login": ["Cannot reset password", "Locked out after 2FA change", "Email change not saving", "Session expires too fast"],
-    "bug": ["App crashes on export", "Search returns no results", "Dashboard shows wrong totals", "Upload fails for large files"],
-    "shipping": ["Where is my order", "Wrong item delivered", "Package arrived damaged", "Delivery date keeps moving"],
-    "feature_request": ["Dark mode please", "Export to Excel", "Bulk edit for tickets", "Keyboard shortcuts"],
+    "billing": [
+        "Charged twice this month",
+        "Invoice missing VAT number",
+        "Update card details",
+        "Refund not received",
+    ],
+    "login": [
+        "Cannot reset password",
+        "Locked out after 2FA change",
+        "Email change not saving",
+        "Session expires too fast",
+    ],
+    "bug": [
+        "App crashes on export",
+        "Search returns no results",
+        "Dashboard shows wrong totals",
+        "Upload fails for large files",
+    ],
+    "shipping": [
+        "Where is my order",
+        "Wrong item delivered",
+        "Package arrived damaged",
+        "Delivery date keeps moving",
+    ],
+    "feature_request": [
+        "Dark mode please",
+        "Export to Excel",
+        "Bulk edit for tickets",
+        "Keyboard shortcuts",
+    ],
 }
 BODIES = [
     "Happened again today after the update.",

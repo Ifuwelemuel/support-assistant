@@ -38,9 +38,12 @@ def validate(df: pd.DataFrame) -> list[str]:
     if duplicates:
         issues.append(f"duplicate ids: {duplicates}")
     return issues
-def load_raw(path:str | Path) -> pd.DataFrame:
+
+
+def load_raw(path: str | Path) -> pd.DataFrame:
     """Read a ticket csv with no validation for that still needs cleaning"""
-    return pd.read_csv(path,dtype=str)
+    return pd.read_csv(path, dtype=str)
+
 
 def load_tickets(path: str | Path) -> pd.DataFrame:
     """Read a ticket CSV and return a validated DataFrame, or raise TicketDataError."""
@@ -55,8 +58,9 @@ def load_tickets(path: str | Path) -> pd.DataFrame:
     return df
 
 
-TEXT_COLUMNS = ["id","channel","category","priority","subject","body"]
-LABEL_COLUMNS = ["channel","category","priority"]
+TEXT_COLUMNS = ["id", "channel", "category", "priority", "subject", "body"]
+LABEL_COLUMNS = ["channel", "category", "priority"]
+
 
 def strip_text(df: pd.DataFrame) -> pd.DataFrame:
     """Trim whitespace in every text column; cells left blank become missing."""
@@ -71,16 +75,18 @@ def normalise_labels(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     for col in LABEL_COLUMNS:
         df[col] = (
-            df[col].str.lower().str.replace("-","", regex=False).str.replace(" ","_",regex=False)
+            df[col].str.lower().str.replace("-", "", regex=False).str.replace(" ", "_", regex=False)
         )
 
     return df
+
 
 def fill_missing_priority(df: pd.DataFrame, default: str = "medium") -> pd.DataFrame:
     df = df.copy()
     df["priority"] = df["priority"].fillna(default)
 
     return df
+
 
 def drop_incomplete(df: pd.DataFrame) -> pd.DataFrame:
     """Drop tickets with no id, subject or body — there is nothing to classify."""
@@ -113,16 +119,11 @@ def clean_tickets(df: pd.DataFrame) -> pd.DataFrame:
         raise TicketDataError("; ".join(issues))
     return df
 
-def category_shares(df : pd.DataFrame) -> pd.Series:
-    """share of tickets in each category, larger first """
+
+def category_shares(df: pd.DataFrame) -> pd.Series:
+    """share of tickets in each category, larger first"""
 
     return df["category"].value_counts(normalize=True)
-
-
-
-
-
-
 
 
 def main(argv: list[str] | None = None) -> int:
