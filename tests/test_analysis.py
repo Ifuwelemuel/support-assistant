@@ -13,7 +13,7 @@ from support_assistant.analysis import (
     write_report,
 )
 
-SAMPLE = Path("data/sample/ticket.csv")
+SAMPLE = Path("data/sample/tickets.csv")
 
 def test_count_by_priority(tickets):
     assert count_by(tickets, "priority") == {"high": 3, "medium": 5, "low": 4}

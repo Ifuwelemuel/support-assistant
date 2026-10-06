@@ -4,7 +4,7 @@ import pytest
 
 from support_assistant.analysis import load_tickets
 
-SAMPLE = Path("data/sample/ticket.csv")
+SAMPLE = Path("data/sample/tickets.csv")
 
 @pytest.fixture
 def tickets():

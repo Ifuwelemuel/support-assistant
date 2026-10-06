@@ -3,8 +3,9 @@
 import csv
 from pathlib import Path
 from dataclasses import dataclass,fields
+import pandas as pd
 
-Sample = Path("data/sample/ticket.csv")
+Sample = Path("data/sample/tickets.csv")
 
 
 class TicketError(Exception):
@@ -61,32 +62,34 @@ def load_rows(path=Sample):
 
     with open(path, newline="") as f:
         return list(csv.DictReader(f))
+
+def to_frame(tickets):
+    """The tickets as a pandas table: one row per ticket, one column per field"""
+    return pd.DataFrame(tickets,columns=FIELDS)
+
+def from_frame(df):
+    """Rows of a table turned back into ticlets objects"""
+
+    return [Ticket(**row) for row in df.to_dict("records")]
+
+
+
 def check_field(tickets, field):
     """Raise TicketError if field is not a colum  of the data"""
     if field  not in FIELDS:
         raise TicketError(f"unknown field '{field}';expected one of {FIELDS}")
 
 def count_by(tickets, field):
-    """count how many rows have each value of field"""
-    check_field(tickets,field)
-    counts = {}
-    for ticket in tickets:
-        value = getattr(ticket,field)
-        if value in counts:
-            counts[value] = counts[value] + 1
+    """Count how many tickets have each value of field; ties in first-seen order."""
+    check_field(tickets, field)
+    #counts = to_frame(tickets)[field].value_counts(sort=False)
+    return to_frame(tickets)[field].value_counts(sort=False).to_dict()
 
-        else:
-            counts[value] = 1
-    return counts
-
-def filter_by(tickets,field,value):
-    """Return the rows whose filed equals value, as a new list"""
-    check_field(tickets,field)
-    result = []
-    for ticket in tickets:
-        if getattr(ticket, field) == value:
-            result.append(ticket)
-    return result
+def filter_by(tickets, field, value):
+    """Return the tickets whose `field` equals `value`, as a new list."""
+    check_field(tickets, field)
+    df = to_frame(tickets)
+    return from_frame(df[df[field] == value])
 
 def high_priority(tickets):
     """return only the high-priority tickets."""
@@ -95,14 +98,11 @@ def high_priority(tickets):
 def count_of(pair):
     return pair[1]
 
-def top_words(tickets,n=3):
-    """The n most common words across ticket subject, as (word, count) pairs"""
-    counts = {}
-    for ticket in tickets:
-        for word in ticket.subject.lower().split():
-            counts[word] = counts.get(word,0) + 1
-    ranked = sorted(counts.items(), key=count_of, reverse=True)
-    return ranked[:n]
+def top_words(tickets, n=3):
+    """The n most common subject words as (word, count) pairs; ties in first-seen order."""
+    words = to_frame(tickets)["subject"].str.lower().str.split().explode()
+    counts = words.value_counts(sort=False).sort_values(ascending=False, kind="stable")
+    return list(counts.head(n).items())
 
 def write_report(tickets, path="reports/summary.txt"):
     """Write a plain-text summary of the tickets to `path` and return the path."""
