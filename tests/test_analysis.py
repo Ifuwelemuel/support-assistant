@@ -15,6 +15,7 @@ from support_assistant.analysis import (
 
 SAMPLE = Path("data/sample/tickets.csv")
 
+
 def test_count_by_priority(tickets):
     assert count_by(tickets, "priority") == {"high": 3, "medium": 5, "low": 4}
 
@@ -84,7 +85,7 @@ def test_write_report_creates_file(tickets, tmp_path):
 def test_ticket_is_high_and_describe():
     ticket = Ticket("T-1", "2026-01-01", "email", "bug", "high", "Crash", "It crashed")
     assert ticket.is_high()
-    assert ticket.describe() == ' T-1 (high) Crash'
+    assert ticket.describe() == " T-1 (high) Crash"
     assert not Ticket("T-2", "2026-01-01", "chat", "bug", "low", "Slow", "Slow").is_high()
 
 
