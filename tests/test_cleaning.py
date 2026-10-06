@@ -9,7 +9,6 @@ from support_assistant.data import (
     drop_incomplete,
     fill_missing_priority,
     load_raw,
-    load_tickets,
     normalise_labels,
     parse_dates,
     strip_text,

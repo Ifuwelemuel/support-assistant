@@ -1,8 +1,9 @@
 """plain - python analysis of support tickets"""
 
 import csv
-from pathlib import Path
 from dataclasses import dataclass, fields
+from pathlib import Path
+
 import pandas as pd
 
 Sample = Path("data/sample/tickets.csv")
@@ -44,9 +45,10 @@ def load_tickets(path=Sample):
     for row in load_rows(path):
         try:
             tickets.append(Ticket(**row))
+        except TypeError as exc:
+            message = f"row {row.get('id', '?')} does not match the Ticket fields {FIELDS}"
+            raise TicketError(message) from exc
 
-        except TypeError:
-            raise TicketError(f"row {row.get('id', '?')} does not match the Ticket fields {FIELDS}")
     return tickets
 
 
@@ -128,13 +130,18 @@ def write_report(tickets, path="reports/summary.txt"):
     return path
 
 
-if __name__ == "__main__":
+def main():
+    """Command line write summary report return 0 on success, 1 on failure"""
     try:
         tickets = load_tickets()
-
     except TicketError as exc:
-        print(f"FAIL: {exc}")
-        raise SystemExit(1)
+        print(f"FAIL:{exc}")
+        return 1
     report = write_report(tickets)
     print(f"wrote {report}")
     print(report.read_text())
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
