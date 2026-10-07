@@ -11,10 +11,14 @@ help:
 	@echo "make image    build the Docker image"
 	@echo "make serve    build the image, then run the API in a container on port 8000"
 	@echo "make data download the BANKING77 dataset into data/raw (not kept in git)"
+	@echo "make train train the intent classifier and print its validation accuracy"
 
 setup:
 	uv sync
 	uv run pre-commit install
+
+train:
+	uv run python -m support_assistant.model
 
 data:
 	mkdir -p data/raw
