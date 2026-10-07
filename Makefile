@@ -10,10 +10,16 @@ help:
 	@echo "make api      run the API on this Mac, reloading when code changes"
 	@echo "make image    build the Docker image"
 	@echo "make serve    build the image, then run the API in a container on port 8000"
+	@echo "make data download the BANKING77 dataset into data/raw (not kept in git)"
 
 setup:
 	uv sync
 	uv run pre-commit install
+
+data:
+	mkdir -p data/raw
+	curl -fsSL -o data/raw/banking77_train.csv https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/master/banking_data/train.csv
+	curl -fsSL -o data/raw/banking77_test.csv https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/master/banking_data/test.csv
 
 test:
 	uv run pytest -q

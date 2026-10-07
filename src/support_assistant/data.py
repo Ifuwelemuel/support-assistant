@@ -126,6 +126,28 @@ def category_shares(df: pd.DataFrame) -> pd.Series:
     return df["category"].value_counts(normalize=True)
 
 
+INTENT_COLUMNS = ["text", "category"]
+
+
+def normalise_text(text: str) -> str:
+    """Lower-case and collapse all whitespace: the form used a compare two messages"""
+    return " ".join(text.lower().split())
+
+
+def load_intents(path: str | Path) -> pd.DataFrame:
+    """Read a lablelled-message CSV -columns text, category- or raise Ticket error"""
+    path = Path(path)
+    if not path.is_file():
+        raise TicketDataError(f"data file not found: {path}(run 'make data')")
+    df = pd.read_csv(path)
+    if list(df.columns) != INTENT_COLUMNS:
+        raise TicketDataError(f"expected columns: {INTENT_COLUMNS}, found {list(df.columns)}")
+    if df.isna().any().any():
+        n_missing = int(df.isna().any(axis=1).sum())
+        raise TicketDataError(f"{n_missing} rows have a missing text or category")
+    return df
+
+
 def main(argv: list[str] | None = None) -> int:
     """Command-line entry point: validate a ticket CSV, exit 0 if clean."""
     parser = argparse.ArgumentParser(description="Validate a support-ticket CSV.")
