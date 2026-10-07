@@ -13,6 +13,8 @@ help:
 	@echo "make data download the BANKING77 dataset into data/raw (not kept in git)"
 	@echo "make train train the intent classifier and print its validation accuracy"
 	@echo "make compare cross-validate every model and print the comparison table"
+	@echo "make experiments  run the experiment grid, one MLflow run per configuration"
+	@echo "make mlflow   open the MLflow page for this project at http://localhost:5001"
 
 setup:
 	uv sync
@@ -23,6 +25,12 @@ train:
 
 compare:
 	uv run python -m support_assistant.model --compare
+
+experiments:
+	uv run python -m support_assistant.experiments
+
+mlflow:
+	uv run mlflow ui --backend-store-uri sqlite:///mlflow.db --port 5001
 
 data:
 	mkdir -p data/raw
