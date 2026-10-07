@@ -30,3 +30,8 @@ mlruns/                 # MLflow's local store (Week 2)
 .DS_Store               # Finder's folder metadata
 .vscode/                # personal editor settings
 *.swp
+
+# MLflow: the tracking database and the stored models are products, not source
+mlflow.db
+mlruns/
+mlartifacts/
