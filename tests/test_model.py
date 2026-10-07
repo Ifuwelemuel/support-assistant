@@ -1,7 +1,14 @@
 import pandas as pd
+import pytest
 
 from support_assistant.data import normalise_text
-from support_assistant.model import build_pipeline, split_intents
+from support_assistant.model import (
+    CLASSIFIERS,
+    build_pipeline,
+    compare_models,
+    score_predictions,
+    split_intents,
+)
 
 MESSAGES = [
     ("where is my card", "card_arrival"),
@@ -11,6 +18,37 @@ MESSAGES = [
     ("which exchange rate do you use", "exchange_rate"),
     ("how is the exchange rate calculated", "exchange_rate"),
 ]
+
+
+def test_every_registered_classifier_fits_and_predicts():
+    texts = [text for text, _ in MESSAGES]
+    labels = [label for _, label in MESSAGES]
+    for name in CLASSIFIERS:
+        pipeline = build_pipeline(name)
+        pipeline.fit(texts, labels)
+        assert len(pipeline.predict(["where is my card"])) == 1
+
+
+def test_unknown_classifier_is_rejected_with_the_valid_names():
+    with pytest.raises(ValueError, match="unknown classifier 'magic'"):
+        build_pipeline("magic")
+
+
+def test_score_predictions_matches_the_hand_calculation():
+    y_true = ["card_arrival"] * 6 + ["exchange_rate"] * 3 + ["lost_or_stolen_card"]
+    y_pred = (
+        ["card_arrival"] * 6 + ["exchange_rate", "exchange_rate", "card_arrival"] + ["card_arrival"]
+    )
+    scores = score_predictions(y_true, y_pred)
+    assert scores["accuracy"] == pytest.approx(0.8)
+    assert scores["macro_f1"] == pytest.approx(0.5524, abs=0.0001)
+
+
+def test_compare_models_scores_every_model_on_the_same_folds():
+    table = compare_models(numbered_frame(), folds=2)
+    assert set(table["model"]) == set(CLASSIFIERS)
+    assert list(table["macro_f1"]) == sorted(table["macro_f1"], reverse=True)
+    assert table.loc[table["model"] == "baseline", "accuracy"].item() == 0.5
 
 
 def numbered_frame():
