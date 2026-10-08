@@ -15,6 +15,8 @@ help:
 	@echo "make compare cross-validate every model and print the comparison table"
 	@echo "make experiments  run the experiment grid, one MLflow run per configuration"
 	@echo "make mlflow   open the MLflow page for this project at http://localhost:5001"
+	@echo "make release  fit the final model, score it ONCE on the test set, register and export it"
+
 
 setup:
 	uv sync
@@ -31,6 +33,9 @@ experiments:
 
 mlflow:
 	uv run mlflow ui --backend-store-uri sqlite:///mlflow.db --port 5001
+
+release:
+	uv run python -m support_assistant.release
 
 data:
 	mkdir -p data/raw
