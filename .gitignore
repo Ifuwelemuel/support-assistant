@@ -35,3 +35,6 @@ mlruns/                 # MLflow's local store (Week 2)
 mlflow.db
 mlruns/
 mlartifacts/
+
+# Exported models: products of `make release`, not source
+models/

@@ -3,6 +3,7 @@
 import argparse
 from pathlib import Path
 
+import joblib
 import pandas as pd
 from sklearn.dummy import DummyClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -92,6 +93,47 @@ def compare_models(df, folds=5, seed=42):
             }
         )
     return pd.DataFrame(rows).sort_values("macro_f1", ascending=False).reset_index(drop=True)
+
+
+def fit_final(train_df, params):
+    """Fit one configuration on every distinct training message; return the fitted pipeline."""
+    settings = dict(params)
+    classifier = settings.pop("classifier")
+    unique = unique_messages(train_df)
+    pipeline = build_pipeline(classifier).set_params(**settings)
+    return pipeline.fit(unique["text"], unique["category"])
+
+
+def compare_with_baseline(pipeline, train_df, test_df):
+    """Score a fitted pipeline and the majority-class baseline on the same messages."""
+    unique = unique_messages(train_df)
+    baseline = build_pipeline("baseline").fit(unique["text"], unique["category"])
+    model_scores = score_predictions(test_df["category"], pipeline.predict(test_df["text"]))
+    baseline_scores = score_predictions(test_df["category"], baseline.predict(test_df["text"]))
+    margin = {name: model_scores[name] - baseline_scores[name] for name in model_scores}
+    return {"model": model_scores, "baseline": baseline_scores, "margin": margin}
+
+
+def count_overlap(train_df, test_df):
+    """How many test messages also appear in the training data (compared after normalising)."""
+    train_keys = set(train_df["text"].map(normalise_text))
+    return int(test_df["text"].map(normalise_text).isin(train_keys).sum())
+
+
+def save_model(pipeline, path):
+    """Write a fitted pipeline to one file."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    joblib.dump(pipeline, path)
+    return path
+
+
+def load_model(path):
+    """Read a fitted pipeline back from a file written by save_model."""
+    path = Path(path)
+    if not path.is_file():
+        raise TicketDataError(f"model file not found: {path} (run `make release`)")
+    return joblib.load(path)
 
 
 def main(argv=None):
